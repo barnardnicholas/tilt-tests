@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tilt Tests</title>
+    <!-- jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.min.js"
+      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+      crossorigin="anonymous"
+    ></script>
+    <!-- Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        font-family: "Helvetica", Arial, sans-serif;
+        text-align: center;
+        color: #222222;
+      }
+      h1 {
+        margin-bottom: 1em;
+      }
+      #mouse-area {
+        height: 70vh;
+        background: #f7f7f7;
+        padding: 10%;
+        perspective: 800px;
+        box-sizing: border-box;
+      }
+      #tilter {
+        width: 300px;
+        height: 300px;
+        border: 1px solid;
+        border-radius: 5%;
+        background-color: #e8e8e8;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        position: absolute;
+        top: calc(50% - 150px);
+        left: calc(50% - 150px);
+        transform-style: preserve-3d;
+      }
+      #tilter-child-1,
+      #tilter-child-2,
+      #tilter-child-3 {
+        border: 1px solid;
+        border-radius: 5%;
+        width: 80%;
+        height: 80%;
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        -webkit-transform: translateZ(80px);
+        -moz-transform: translateZ(80px);
+        transform: translateZ(80px);
+        -webkit-transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+      }
+      #tilter-child-1 {
+        background-color: #d8d8d8;
+      }
+      #tilter-child-2 {
+        background-color: #c8c8c8;
+      }
+      #tilter-child-3 {
+        background-color: #b8b8b8;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      #tilter-text {
+        transform: translateZ(80px);
+        font-size: 70px;
+        color: #ffffff;
+        -webkit-text-stroke: 1px #222222;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Tilt Tests</h1>
+    <div id="info"></div>
+    <br />
+    <br />
+    <div id="mouse-area">
+      <div id="tilter">
+        <div id="tilter-child-1">
+          <div id="tilter-child-2">
+            <div id="tilter-child-3">
+              <div id="tilter-text">Tilty</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        width: 10px;
+        height: 159px;
+        position: fixed;
+        border: 1px solid;
+        top: 0;
+      "
+    ></div>
+    <script type="text/javascript">
+      // Define amounts in degrees
+      let sensitivityX = 45;
+      let sensitivityY = 45;
+      let reverseX = false;
+      let reverseY = true;
+      // Define window dimensions
+      let windowArea = {
+        width: $(window).width(),
+        height: $(window).height(),
+      };
+      //Define window center
+      let windowCenter = {
+        x: Math.floor(windowArea.width / 2),
+        y: Math.floor(windowArea.height / 2),
+      };
+
+      // // Define mouseArea dimensions in absolute space
+      // let mouseArea = {
+      //   top: $("#mouse-area").offset().top,
+      //   left: $("#mouse-area").offset().left,
+      //   bottom: $("#mouse-area").offset().top + $("#mouse-area").height(),
+      //   right: $("#mouse-area").offset().left + $("#mouse-area").width(),
+      // };
+      // $("#info").text(
+      //   `Top: ${mouseArea.top}, Left: ${mouseArea.left}, Right: ${mouseArea.right}, Bottom ${mouseArea.bottom}`
+      // );
+      // // Define mouseArea center
+      // let mouseAreaCenter = {
+      //   x: Math.floor(mouseArea.x / 2),
+      //   y: Math.floor(mouseArea.y / 2),
+      // };
+
+      $("#mouse-area").mousemove((event) => {
+        // Define X and Y offsets
+        let mouseOffset = {
+          x: event.clientX - windowCenter.x,
+          y: event.clientY - windowCenter.y,
+        };
+        // Convert mouseOffset into degrees, relative to amounts
+        let rotation = {
+          y: mouseOffset.x / (windowArea.width / 2 / sensitivityX),
+          x: mouseOffset.y / (windowArea.height / 2 / sensitivityY),
+        };
+        if (reverseY) rotation.x *= -1;
+        if (reverseX) rotation.y *= -1;
+
+        $("#tilter").css({
+          "-webkit-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+          "-moz-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+          "-ms-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+          "-o-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+        });
+      });
+    </script>
+  </body>
+</html>
