@@ -129,6 +129,16 @@
         y: Math.floor(windowArea.height / 2),
       };
 
+      const updateAngles = (x, y) => {
+        $("#tilter").css({
+          "-webkit-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
+          "-moz-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
+          "-ms-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
+          "-o-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
+          transform: `rotateX(${x}deg) rotateY(${y}deg)`,
+        });
+      };
+
       $("#mouse-area").mousemove((event) => {
         // Define X and Y offsets
         let mouseOffset = {
@@ -143,23 +153,11 @@
         if (reverseY) rotation.x *= -1;
         if (reverseX) rotation.y *= -1;
 
-        $("#tilter").css({
-          "-webkit-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          "-moz-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          "-ms-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          "-o-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-        });
+        updateAngles(rotation.x, rotation.y);
       });
       $("#mouse-area").mouseleave((event) => {
         if (resetOnLeave) {
-          $("#tilter").css({
-            "-webkit-transform": `rotateX(0deg) rotateY(0deg)`,
-            "-moz-transform": `rotateX(0deg) rotateY(0deg)`,
-            "-ms-transform": `rotateX(0deg) rotateY(0deg)`,
-            "-o-transform": `rotateX(0deg) rotateY(0deg)`,
-            transform: `rotateX(0deg) rotateY(0deg)`,
-          });
+          updateAngles(0, 0);
         }
       });
     </script>
