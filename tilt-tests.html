@@ -112,7 +112,15 @@
       "
     ></div>
     <script type="text/javascript">
-      class test extends $ {}
+      (function ($) {
+        $.fn.tilty = function () {
+          this.css({ position: "relative" });
+          console.log(this);
+          return this;
+        };
+      })(jQuery);
+    </script>
+    <script type="text/javascript">
       // Define amounts in degrees
       let sensitivityX = 45;
       let sensitivityY = 45;
