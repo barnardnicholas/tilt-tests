@@ -117,6 +117,7 @@
       let sensitivityY = 45;
       let reverseX = false;
       let reverseY = true;
+      let resetOnLeave = true;
       // Define window dimensions
       let windowArea = {
         width: $(window).width(),
@@ -127,22 +128,6 @@
         x: Math.floor(windowArea.width / 2),
         y: Math.floor(windowArea.height / 2),
       };
-
-      // // Define mouseArea dimensions in absolute space
-      // let mouseArea = {
-      //   top: $("#mouse-area").offset().top,
-      //   left: $("#mouse-area").offset().left,
-      //   bottom: $("#mouse-area").offset().top + $("#mouse-area").height(),
-      //   right: $("#mouse-area").offset().left + $("#mouse-area").width(),
-      // };
-      // $("#info").text(
-      //   `Top: ${mouseArea.top}, Left: ${mouseArea.left}, Right: ${mouseArea.right}, Bottom ${mouseArea.bottom}`
-      // );
-      // // Define mouseArea center
-      // let mouseAreaCenter = {
-      //   x: Math.floor(mouseArea.x / 2),
-      //   y: Math.floor(mouseArea.y / 2),
-      // };
 
       $("#mouse-area").mousemove((event) => {
         // Define X and Y offsets
@@ -165,6 +150,17 @@
           "-o-transform": `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
         });
+      });
+      $("#mouse-area").mouseleave((event) => {
+        if (resetOnLeave) {
+          $("#tilter").css({
+            "-webkit-transform": `rotateX(0deg) rotateY(0deg)`,
+            "-moz-transform": `rotateX(0deg) rotateY(0deg)`,
+            "-ms-transform": `rotateX(0deg) rotateY(0deg)`,
+            "-o-transform": `rotateX(0deg) rotateY(0deg)`,
+            transform: `rotateX(0deg) rotateY(0deg)`,
+          });
+        }
       });
     </script>
   </body>
