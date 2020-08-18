@@ -112,31 +112,54 @@
       "
     ></div>
     <script type="text/javascript">
+      class test extends $ {}
       // Define amounts in degrees
       let sensitivityX = 45;
       let sensitivityY = 45;
       let reverseX = false;
       let reverseY = true;
       let resetOnLeave = true;
+      let resetInterval = 200;
+
       // Define window dimensions
       let windowArea = {
         width: $(window).width(),
         height: $(window).height(),
       };
+
       //Define window center
       let windowCenter = {
         x: Math.floor(windowArea.width / 2),
         y: Math.floor(windowArea.height / 2),
       };
 
-      const updateAngles = (x, y) => {
-        $("#tilter").css({
+      // Function to update rotation
+      const updateAngles = (element, x, y) => {
+        element.css({
           "-webkit-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
           "-moz-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
           "-ms-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
           "-o-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
           transform: `rotateX(${x}deg) rotateY(${y}deg)`,
         });
+      };
+
+      // Function to resest element
+      const resetRotation = (element, transition) => {
+        element.css({
+          "-webkit-transition": `transform ${transition / 1000}s 0s ease-out`,
+          "-moz-transition": `transform ${transition / 1000}s 0s ease-out`,
+          "-o-transition": `transform ${transition / 1000}s 0s ease-out`,
+          transition: `transform ${transition / 1000}s 0s ease-out`,
+        });
+        setTimeout(() => {
+          element.css({
+            "-webkit-transition": "unset",
+            "-moz-transition": "unset",
+            "-o-transition": "unset",
+            transition: "unset",
+          });
+        }, transition + 5);
       };
 
       $("#mouse-area").mousemove((event) => {
@@ -153,11 +176,12 @@
         if (reverseY) rotation.x *= -1;
         if (reverseX) rotation.y *= -1;
 
-        updateAngles(rotation.x, rotation.y);
+        updateAngles($("#tilter"), rotation.x, rotation.y);
       });
       $("#mouse-area").mouseleave((event) => {
         if (resetOnLeave) {
-          updateAngles(0, 0);
+          resetRotation($("#tilter"), resetInterval);
+          updateAngles($("#tilter"), 0, 0);
         }
       });
     </script>
