@@ -32,6 +32,7 @@
         padding: 10%;
         perspective: 800px;
         box-sizing: border-box;
+        border: 1px solid #666666;
       }
       #tilter {
         width: 300px;
@@ -102,96 +103,179 @@
       </div>
     </div>
 
-    <div
-      style="
-        width: 10px;
-        height: 159px;
-        position: fixed;
-        border: 1px solid;
-        top: 0;
-      "
-    ></div>
+    <!-- <div id="mouse-area">
+      <div id="tilter">
+        <div id="tilter-child-1">
+          <div id="tilter-child-2">
+            <div id="tilter-child-3">
+              <div id="tilter-text">Tilty</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <!-- Plugin Script -->
     <script type="text/javascript">
       (function ($) {
-        $.fn.tilty = function () {
-          this.css({ position: "relative" });
-          console.log(this);
+        let canUpdate = true;
+        $.fn.tilty = function (props = {}) {
+          // Define default options
+          const defaultOptions = {
+            mouseMode: "absolute",
+            sensitivityX: 20,
+            sensitivityY: 20,
+            reverseX: false,
+            reverseY: true,
+            resetOnLeave: true,
+            resetInterval: 100,
+            ecoMode: true,
+            ecoInterval: 100,
+          };
+
+          // Assemble options
+          let options = {
+            ...defaultOptions,
+            ...props,
+          };
+
+          // Define variables
+          let {
+            mouseMode,
+            sensitivityX,
+            sensitivityY,
+            reverseX,
+            reverseY,
+            resetOnLeave,
+            resetInterval,
+            ecoMode,
+            ecoInterval,
+          } = options;
+
+          // Define mouseMode options
+          const mouseArea = {
+            absolute: $(document),
+            relative: $("#mouse-area"),
+          };
+
+          // Define window dimensions
+          let windowArea = {
+            width: $(window).width(),
+            height: $(window).height(),
+          };
+
+          //Define window center
+          let windowCenter = {
+            x: Math.floor(windowArea.width / 2),
+            y: Math.floor(windowArea.height / 2),
+          };
+
+          // Function to update rotation
+          const updateAngles = (element, x, y) => {
+            element.css({
+              "-webkit-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
+              "-moz-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
+              "-ms-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
+              "-o-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
+              transform: `rotateX(${x}deg) rotateY(${y}deg)`,
+            });
+          };
+
+          // Function to reset element
+          const resetRotation = (element, transition) => {
+            element.css({
+              "-webkit-transition": `transform ${
+                transition / 1000
+              }s 0s ease-out`,
+              "-moz-transition": `transform ${transition / 1000}s 0s ease-out`,
+              "-o-transition": `transform ${transition / 1000}s 0s ease-out`,
+              transition: `transform ${transition / 1000}s 0s ease-out`,
+            });
+            setTimeout(() => {
+              element.css({
+                "-webkit-transition": "unset",
+                "-moz-transition": "unset",
+                "-o-transition": "unset",
+                transition: "unset",
+              });
+            }, transition + 5);
+          };
+
+          // Add Listeners
+          mouseArea[mouseMode].mousemove((event) => {
+            // Define X and Y offsets
+            const mouseOffset = {
+              x: event.clientX - windowCenter.x,
+              y: event.clientY - windowCenter.y,
+            };
+
+            // Convert mouseOffset into degrees, relative to amounts
+            const rotation = {
+              y: mouseOffset.x / (windowArea.width / 2 / sensitivityX),
+              x: mouseOffset.y / (windowArea.height / 2 / sensitivityY),
+            };
+
+            // Handle axis inversions
+            if (reverseY) rotation.x *= -1;
+            if (reverseX) rotation.y *= -1;
+
+            // Handle Eco Mode
+            if (ecoMode) {
+              this.css({
+                "-webkit-transition": `transform ${
+                  ecoInterval / 1000
+                }s 0s linear`,
+                "-moz-transition": `transform ${ecoInterval / 1000}s 0s linear`,
+                "-o-transition": `transform ${ecoInterval / 1000}s 0s linear`,
+                transition: `transform ${ecoInterval / 1000}s 0s linear`,
+              });
+              if (canUpdate) {
+                updateAngles(this, rotation.x, rotation.y);
+                canUpdate = false;
+                setTimeout(() => {
+                  canUpdate = true;
+                }, ecoInterval);
+              }
+            } else {
+              updateAngles(this, rotation.x, rotation.y);
+            }
+          });
+
+          // Handle mouse leave
+          mouseArea[mouseMode].mouseleave((event) => {
+            if (resetOnLeave) {
+              resetRotation(this, resetInterval);
+              updateAngles(this, 0, 0);
+            }
+          });
+
+          //Handle window resize
+          $(window).on("resize", function () {
+            const win = $(this);
+
+            // Redefine window dimensions
+            windowArea = {
+              width: win.width(),
+              height: win.height(),
+            };
+
+            // Redefine window center
+            windowCenter = {
+              x: Math.floor(windowArea.width / 2),
+              y: Math.floor(windowArea.height / 2),
+            };
+          });
+
+          // Return element
           return this;
         };
       })(jQuery);
     </script>
+    <!-- Client script -->
     <script type="text/javascript">
-      // Define amounts in degrees
-      let sensitivityX = 45;
-      let sensitivityY = 45;
-      let reverseX = false;
-      let reverseY = true;
-      let resetOnLeave = true;
-      let resetInterval = 200;
+      // TODO
+      // mouseMode - absolute/relative mouse-tracking (WIP)
 
-      // Define window dimensions
-      let windowArea = {
-        width: $(window).width(),
-        height: $(window).height(),
-      };
-
-      //Define window center
-      let windowCenter = {
-        x: Math.floor(windowArea.width / 2),
-        y: Math.floor(windowArea.height / 2),
-      };
-
-      // Function to update rotation
-      const updateAngles = (element, x, y) => {
-        element.css({
-          "-webkit-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
-          "-moz-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
-          "-ms-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
-          "-o-transform": `rotateX(${x}deg) rotateY(${y}deg)`,
-          transform: `rotateX(${x}deg) rotateY(${y}deg)`,
-        });
-      };
-
-      // Function to resest element
-      const resetRotation = (element, transition) => {
-        element.css({
-          "-webkit-transition": `transform ${transition / 1000}s 0s ease-out`,
-          "-moz-transition": `transform ${transition / 1000}s 0s ease-out`,
-          "-o-transition": `transform ${transition / 1000}s 0s ease-out`,
-          transition: `transform ${transition / 1000}s 0s ease-out`,
-        });
-        setTimeout(() => {
-          element.css({
-            "-webkit-transition": "unset",
-            "-moz-transition": "unset",
-            "-o-transition": "unset",
-            transition: "unset",
-          });
-        }, transition + 5);
-      };
-
-      $("#mouse-area").mousemove((event) => {
-        // Define X and Y offsets
-        let mouseOffset = {
-          x: event.clientX - windowCenter.x,
-          y: event.clientY - windowCenter.y,
-        };
-        // Convert mouseOffset into degrees, relative to amounts
-        let rotation = {
-          y: mouseOffset.x / (windowArea.width / 2 / sensitivityX),
-          x: mouseOffset.y / (windowArea.height / 2 / sensitivityY),
-        };
-        if (reverseY) rotation.x *= -1;
-        if (reverseX) rotation.y *= -1;
-
-        updateAngles($("#tilter"), rotation.x, rotation.y);
-      });
-      $("#mouse-area").mouseleave((event) => {
-        if (resetOnLeave) {
-          resetRotation($("#tilter"), resetInterval);
-          updateAngles($("#tilter"), 0, 0);
-        }
-      });
+      $("#tilter").tilty();
     </script>
   </body>
 </html>
